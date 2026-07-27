@@ -1,53 +1,51 @@
-import numpy as np
-import pandas as pd
-
-n_loans = 1000
-rng = np.random.default_rng(1000)
-
-property_types = np.array(["Industrial", "Multifamily", "Retail", "Office", "Hotel"])
-
-
-property_risk_map = {"Industrial": 0.00, "Multifamily": 0.20, "Retail": 0.35, "Office": 0.85, "Hotel": 1.00}
-
-loan_tape = pd.DataFrame({ "Loan id": [f"LN-{i:04d}" for i in range(1, n_loans + 1)], "Property type": rng.choice(property_types, size=n_loans), "LTV": rng.uniform(0.40, 0.95, size=n_loans),
-    "DSCR": rng.uniform(0.75, 2.50, size=n_loans),
-    "Occupancy": rng.uniform(0.50, 1.00, size=n_loans),
-    "Sponsor risk score": rng.integers(1, 6, size=n_loans),
-    "Market stress index": rng.uniform(0.00, 1.00, size=n_loans),
-    "Loan age years": rng.uniform(0.00, 10.00, size=n_loans),
-})
-
-loan_tape["Property Risk Flag"] = loan_tape["Property type"].map(property_risk_map)
-
-loan_tape.head(200).style.format({
-    "LTV": "{:.2%}",
-    "DSCR": "{:.2f}",
-    "Occupancy": "{:.2%}",
-    "Market stress index": "{:.2f}",
-    "Property Risk Flag": "{:.2f}"
-})
-
-
-print (loan_tape.shape)
-print (loan_tape.describe())
-print (loan_tape["Property type"].value_counts())
-
-noise = rng.normal(loc=0.0, scale=0.40, size=n_loans)
-
-risk_score = (
-    -2.50
-    + 3.00 * (loan_tape["LTV"] - 0.65)
-    - 1.10 * (loan_tape["DSCR"] - 1.25)
-    - 2.20 * (loan_tape["Occupancy"] - 0.85)
-    + 0.30 * (loan_tape["Sponsor risk score"] - 3)
-    + 0.75 * loan_tape["Property Risk Flag"]
-    + 1.10 * (loan_tape["Market stress index"] - 0.50)
-    + 0.03 * (loan_tape["Loan age years"] - 5)
-    + noise
-)
-
-Def_prob = 1/(1+np.exp(-risk_score))
-
-print()
-print("Default Probability:")
-print(Def_prob.head(10).round(2)*100, "%")
+{
+  "metadata": {
+    "kernelspec": {
+      "name": "xpython",
+      "display_name": "Python 3.13 (XPython)",
+      "language": "python"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.13.1"
+    }
+  },
+  "nbformat_minor": 5,
+  "nbformat": 4,
+  "cells": [
+    {
+      "id": "e4d621bd-5497-444a-a126-e990dcd30dec",
+      "cell_type": "code",
+      "source": "!mamba install pandas\n!mamba install numpy\nimport numpy as np\nimport pandas as pd\n\nn_loans = 1000\nrng = np.random.default_rng(1000)\n\nproperty_types = np.array([\"Industrial\", \"Multifamily\", \"Retail\", \"Office\", \"Hotel\"])\n\n\nproperty_risk_map = {\"Industrial\": 0.00, \"Multifamily\": 0.20, \"Retail\": 0.35, \"Office\": 0.85, \"Hotel\": 1.00}\n\nloan_tape = pd.DataFrame({ \"Loan id\": [f\"LN-{i:04d}\" for i in range(1, n_loans + 1)], \"Property type\": rng.choice(property_types, size=n_loans), \"LTV\": rng.uniform(0.40, 0.95, size=n_loans),\n    \"DSCR\": rng.uniform(0.75, 2.50, size=n_loans),\n    \"Occupancy\": rng.uniform(0.50, 1.00, size=n_loans),\n    \"Sponsor risk score\": rng.integers(1, 6, size=n_loans),\n    \"Market stress index\": rng.uniform(0.00, 1.00, size=n_loans),\n    \"Loan age years\": rng.uniform(0.00, 10.00, size=n_loans),\n})\n\nloan_tape[\"Property Risk Flag\"] = loan_tape[\"Property type\"].map(property_risk_map)\n\nloan_tape.head(200).style.format({\n    \"LTV\": \"{:.2%}\",\n    \"DSCR\": \"{:.2f}\",\n    \"Occupancy\": \"{:.2%}\",\n    \"Market stress index\": \"{:.2f}\",\n    \"Property Risk Flag\": \"{:.2f}\"\n})\n\n\nprint (loan_tape.shape)\nprint (loan_tape.describe())\nprint (loan_tape[\"Property type\"].value_counts())\n\nnoise = rng.normal(loc=0.0, scale=0.40, size=n_loans)\n\nrisk_score = (\n    -2.50\n    + 3.00 * (loan_tape[\"LTV\"] - 0.65)\n    - 1.10 * (loan_tape[\"DSCR\"] - 1.25)\n    - 2.20 * (loan_tape[\"Occupancy\"] - 0.85)\n    + 0.30 * (loan_tape[\"Sponsor risk score\"] - 3)\n    + 0.75 * loan_tape[\"Property Risk Flag\"]\n    + 1.10 * (loan_tape[\"Market stress index\"] - 0.50)\n    + 0.03 * (loan_tape[\"Loan age years\"] - 5)\n    + noise\n)\n\nDef_prob = 1/(1+np.exp(-risk_score))\n\nprint()\nprint(\"Default Probability:\")\nprint(Def_prob.head(10).round(2)*100, \"%\")\n",
+      "metadata": {
+        "trusted": true
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": "mambajs 0.21.4\n\nSpecs: xeus-python, numpy, matplotlib, pillow, ipywidgets>=8.1.6, ipyleaflet, scipy, pandas\nChannels: emscripten-forge-4x, conda-forge\n\nSolving environment...\nSolving took 0.419 seconds\nAll requested packages already installed.\nmambajs 0.21.4\n\nSpecs: xeus-python, numpy, matplotlib, pillow, ipywidgets>=8.1.6, ipyleaflet, scipy, pandas\nChannels: emscripten-forge-4x, conda-forge\n\nSolving environment...\nSolving took 0.409 seconds\nAll requested packages already installed.\n(1000, 9)\n               LTV         DSCR    Occupancy  Sponsor risk score  \\\ncount  1000.000000  1000.000000  1000.000000         1000.000000   \nmean      0.666958     1.610590     0.748234            2.990000   \nstd       0.154450     0.502497     0.144706            1.447064   \nmin       0.400195     0.750749     0.501215            1.000000   \n25%       0.530397     1.184910     0.622314            2.000000   \n50%       0.665570     1.613094     0.750225            3.000000   \n75%       0.794532     2.037184     0.871030            4.000000   \nmax       0.949702     2.498032     0.999778            5.000000   \n\n       Market stress index  Loan age years  Property Risk Flag  \ncount          1000.000000     1000.000000         1000.000000  \nmean              0.510456        5.089459            0.477100  \nstd               0.282325        2.949064            0.380605  \nmin               0.000682        0.000833            0.000000  \n25%               0.281921        2.624188            0.200000  \n50%               0.519399        5.089950            0.350000  \n75%               0.749990        7.697722            0.850000  \nmax               0.999992        9.998629            1.000000  \nProperty type\nRetail         209\nMultifamily    199\nOffice         199\nIndustrial     198\nHotel          195\nName: count, dtype: int64\n\nDefault Probability:\n0     3.0\n1    14.0\n2    33.0\n3    13.0\n4    41.0\n5    21.0\n6    10.0\n7    39.0\n8    27.0\n9    11.0\ndtype: float64 %\n"
+        }
+      ],
+      "execution_count": 4
+    },
+    {
+      "id": "34c28a04-2485-4f44-b97d-a54c64d4ef15",
+      "cell_type": "code",
+      "source": "",
+      "metadata": {
+        "trusted": true
+      },
+      "outputs": [],
+      "execution_count": null
+    }
+  ]
+}
